@@ -23,12 +23,20 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         //Si pulsa la tecla P o hace clic izquierdo empieza el juego
-        if (Input.GetKeyDown(KeyCode.P) || Input.GetMouseButton(0))
+        if (Input.GetKeyDown(KeyCode.Return) || Input.GetMouseButton(0))
         {
             //Cargo la escena de Juego
             // Nombre de la scene del juego, en mi caso es SampleScene
             SceneManager.LoadScene("Juego");
             fuenteDeAudio.Pause();
+        }
+
+        //Si pulsa la tecla I vuelve al inicio
+        if (Input.GetKeyDown(KeyCode.I) || Input.GetKeyDown(KeyCode.Escape))
+        {
+            //Cargo la escena de Inicio
+            SceneManager.LoadScene("Inicio");
+            fuenteDeAudio.Play();
         }
     }
 }

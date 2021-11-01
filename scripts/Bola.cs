@@ -5,18 +5,24 @@ using UnityEngine.UI;
 
 public class Bola : MonoBehaviour
 {
+    //Audio Source
+    public Text resultado;
+
     //Velocidad de la pelota
     public float velocidad = 30.0f;
 
     //Audio Source
     AudioSource fuenteDeAudio;
 
+    public GameObject pos;
+
     //Clips de audio
     public AudioClip
 
             audioGol,
             audioRaqueta,
-            audioRebote;
+            audioRebote,
+            audioWin;
 
     //Contadores de goles
     public int golesIzquierda = 0;
@@ -31,6 +37,13 @@ public class Bola : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        /* Añade en el método Start() */
+        //Desactivo la caja de resultado
+        resultado.enabled = false;
+
+        //Quito la pausa
+        Time.timeScale = 1;
+
         //Velocidad inicial hacia la derecha
         GetComponent<Rigidbody2D>().velocity = Vector2.right * velocidad;
 
@@ -122,22 +135,31 @@ public class Bola : MonoBehaviour
 
         //Vector2.zero es lo mismo que new Vector2(0,0);
         //Velocidad inicial de la bola
-        velocidad = 30;
-
         //Velocidad y dirección
         if (direccion == "Derecha")
         {
             //Incremento goles al de la derecha
             golesDerecha++;
 
+            //Reproduzco el sonido del gol
+            fuenteDeAudio.clip = audioGol;
+
+            fuenteDeAudio.Play();
+
             //Lo escribo en el marcador
             contadorDerecha.text = golesDerecha.ToString();
 
-            //Reinicio la bola
-            GetComponent<Rigidbody2D>().velocity = Vector2.right * velocidad;
+            /* Modifica y sustituye el método reiniciarBola en la comprobación de la dirección Derecha */
+            //Reinicio la bola (si no ha llegado a 5)
+            if (!comprobarFinal())
+            {
+                GetComponent<Rigidbody2D>().velocity =
+                    Vector2.right * velocidad;
 
-            //Vector2.right es lo mismo que new Vector2(1,0)
-            velocidad = velocidad + 0.5f;
+                //Vector2.right es lo mismo que new Vector2(1,0)
+                //Vector2.right es lo mismo que new Vector2(1,0)
+                velocidad = velocidad + 0.5f;
+            }
         }
         else if (direccion == "Izquierda")
         {
@@ -147,15 +169,66 @@ public class Bola : MonoBehaviour
             //Lo escribo en el marcador
             contadorIzquierda.text = golesIzquierda.ToString();
 
-            //Reinicio la bola
-            GetComponent<Rigidbody2D>().velocity = Vector2.left * velocidad;
+            //Reproduzco el sonido del gol
+            fuenteDeAudio.clip = audioGol;
 
-            //Vector2.right es lo mismo que new Vector2(-1,0)
-            velocidad = velocidad + 0.5f;
+            fuenteDeAudio.Play();
+
+            /* Modifica y sustituye el método reiniciarBola en la comprobación de la dirección Izquierda */
+            //Reinicio la bola (si no ha llegado a 5)
+            if (!comprobarFinal())
+            {
+                GetComponent<Rigidbody2D>().velocity = Vector2.left * velocidad;
+
+                //Vector2.left es lo mismo que new Vector2(-1,0)
+                //Vector2.right es lo mismo que new Vector2(-1,0)
+                velocidad = velocidad + 5f;
+            }
         }
+    }
 
-        //Reproduzco el sonido del gol
-        fuenteDeAudio.clip = audioGol;
-        fuenteDeAudio.Play();
+    /* Añade en la declaración de variables */
+    /* Añade en el nuevo método comprobarFinal(), que comprueba si he llegado al final del juego */
+    //Compruebo si alguno ha llegado a 5 goles
+    bool comprobarFinal()
+    {
+        //Si el de la izquierda ha llegado a 5
+        if (golesIzquierda == 5)
+        {
+            fuenteDeAudio.clip = audioWin;
+            fuenteDeAudio.Play();
+
+            //Escribo y muestro el resultado
+            resultado.text =
+                "¡Jugador Izquierda GANA!\nPulsa ESC para volver a Inicio\nPulsa Enter para volver a jugar";
+
+            //Muestro el resultado, pauso el juego y devuelvo true
+            resultado.enabled = true;
+            pos.SetActive(false);
+            Time.timeScale = 0;
+
+            //Pausa
+            return true;
+        } //Si el de le aderecha a llegado a 5
+        else if (golesDerecha == 5)
+        {
+            fuenteDeAudio.clip = audioWin;
+            fuenteDeAudio.Play();
+
+            //Escribo y muestro el resultado
+            resultado.text =
+                "¡Jugador Derecha GANA!\nPulsa ESC para volver a Inicio\nPulsa Enter para volver a jugar";
+
+            //Muestro el resultado, pauso el juego y devuelvo true
+            resultado.enabled = true;
+
+            Time.timeScale = 0; //Pausa
+            return true;
+        }
+        else
+        //Si ninguno ha llegado a 5, continúa el juego
+        {
+            return false;
+        }
     }
 }
